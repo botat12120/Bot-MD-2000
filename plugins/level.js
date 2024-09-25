@@ -36,7 +36,7 @@ let handler = async (m, { conn }) => {
 `.trim()
 
         try {
-            // إنشاء الرسم البياني للمستوى الجديد باستخدام صورة كخلفية
+            // إنشاء الرسم البياني للمستوى الجديد باستخدام canvas
             const img = await generateLevelUpImage(name, user.level, user.exp, global.multiplier)
             conn.sendFile(m.chat, img, 'levelup.jpg', str, m)
         } catch (e) {
@@ -45,7 +45,7 @@ let handler = async (m, { conn }) => {
     }
 }
 
-// دالة لإنشاء صورة المستوى باستخدام Canvas وخلفية معينة
+// دالة لإنشاء صورة المستوى باستخدام Canvas
 async function generateLevelUpImage(name, level, exp, multiplier) {
     const { min, xp, max } = xpRange(level, multiplier)
     const progress = (exp - min) / xp * 100 // النسبة المئوية لتقدم XP
@@ -55,11 +55,11 @@ async function generateLevelUpImage(name, level, exp, multiplier) {
     const canvas = createCanvas(width, height)
     const ctx = canvas.getContext('2d')
 
-    // تحميل صورة الخلفية
-    const backgroundImage = await loadImage('path/to/your/background/image.jpg') // ضع المسار الصحيح للصورة
-    ctx.drawImage(backgroundImage, 0, 0, width, height) // رسم الصورة كخلفية
+    // خلفية الصورة
+    ctx.fillStyle = '#2C2F33'
+    ctx.fillRect(0, 0, width, height)
 
-    // عنوان المستوى
+    // عنوان المستوي
     ctx.font = 'bold 36px Arial'
     ctx.fillStyle = '#ffffff'
     ctx.fillText(`🎉 تهانينا ${name}!`, 50, 50)
@@ -67,10 +67,10 @@ async function generateLevelUpImage(name, level, exp, multiplier) {
 
     // شريط التقدم
     ctx.fillStyle = '#ffffff'
-    ctx.fillRect(50, 150, 700, 30) // الإطار الخارجي لشريط التقدم
+    ctx.fillRect(50, 150, 700, 30) // الإطار الخارجي
 
     ctx.fillStyle = '#7289DA' // لون التقدم
-    ctx.fillRect(50, 150, (700 * progress) / 100, 30) // تقدم شريط المستوى
+    ctx.fillRect(50, 150, (700 * progress) / 100, 30)
 
     // النص الذي يظهر نسبة التقدم
     ctx.font = 'bold 24px Arial'
