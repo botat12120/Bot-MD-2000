@@ -1,5 +1,7 @@
 import { canLevelUp, xpRange } from '../lib/levelling.js'
+import { createCanvas, loadImage } from 'canvas'
 import { levelup } from '../lib/canvas.js'
+import fs from 'fs'
 
 let handler = async (m, { conn }) => {
     let name = conn.getName(m.sender)
@@ -11,11 +13,13 @@ let handler = async (m, { conn }) => {
         throw `
 ┌───⊷ *المستوي*
 ▢ الاسم : *${name}*
-▢ المستوي : *${user.level}*
-▢ XP : *${user.exp - min}/${xp}*
+▢ المستوي الحالي : *${user.level}*
+▢ نقاط XP الحالية : *${user.exp}*
+▢ نقاط XP اللازمة للوصول إلى المستوى التالي : *${max - user.exp} XP*
+▢ مجموع نقاط XP المطلوبة للمستوى التالي : *${xp} XP*
 └──────────────
 
-انت تحتاج الي *${max - user.exp}* *XP* لرفع مستواك
+انت تحتاج إلى *${max - user.exp} XP* لرفع مستواك.
 `.trim()
     }
 
@@ -25,21 +29,48 @@ let handler = async (m, { conn }) => {
     while (canLevelUp(user.level, user.exp, global.multiplier)) user.level++
 
     if (before !== user.level) {
-        let teks = `🎊 مبروك لدخواك المستوى الجديد ${name}! المستوي:`
+        let teks = `🎊 مبروك لدخولك المستوى الجديد ${name}! المستوى:`
+        let { min, xp, max } = xpRange(user.level, global.multiplier)
+
+        // تحميل قالب الصورة
+        let imgPath = '../src/lvlup_template.jpg'
+        const template = await loadImage(imgPath)
+        
+        // إعداد canvas
+        const canvas = createCanvas(template.width, template.height)
+        const ctx = canvas.getContext('2d')
+        
+        // رسم الصورة
+        ctx.drawImage(template, 0, 0, canvas.width, canvas.height)
+
+        // إعداد النصوص
+        ctx.font = 'bold 30px Arial'
+        ctx.fillStyle = '#FFFFFF'
+        ctx.textAlign = 'center'
+        
+        // كتابة النصوص على الصورة (عدد نقاط XP والمستوى)
+        ctx.fillText(`المستوى: ${user.level}`, canvas.width / 2, 50) // مستوى المستخدم
+        ctx.fillText(`XP الحالية: ${user.exp}`, canvas.width / 2, 100) // نقاط XP الحالية
+        ctx.fillText(`XP المتبقية: ${max - user.exp}`, canvas.width / 2, 150) // نقاط XP المتبقية للوصول للمستوى التالي
+
+        // حفظ الصورة
+        const buffer = canvas.toBuffer()
+        fs.writeFileSync('/tmp/levelup.jpg', buffer)
+
         let str = `
 ┌─⊷ *المستوي*
 ▢ المستوي السابق : *${before}*
 ▢ المستوي الحالي : *${user.level}*
+▢ نقاط XP الحالية : *${user.exp}*
+▢ نقاط XP اللازمة للوصول إلى المستوى التالي : *${max - user.exp} XP*
 └──────────────
 
-*_كلما تفاعلت مع البوت ارتفع مستواك_*
+✨ استمر في التفاعل مع البوت لرفع مستواك أكثر! ✨
 `.trim()
 
         try {
-            // إنشاء صورة المستوى الجديد باستخدام canvas
-            const img = await levelup(teks, user.level)
-            // إرسال الصورة مع النص التوضيحي
-            conn.sendFile(m.chat, img, 'levelup.jpg', str, m)
+            // إرسال الصورة المعدلة مع النص
+            conn.sendFile(m.chat, '/tmp/levelup.jpg', 'levelup.jpg', str, m)
         } catch (e) {
             // في حالة وجود خطأ أثناء توليد الصورة، إرسال النص فقط
             m.reply(str)
