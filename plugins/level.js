@@ -55,8 +55,8 @@ async function generateLevelUpImage(name, level, exp, multiplier) {
     const canvas = createCanvas(width, height)
     const ctx = canvas.getContext('2d')
 
-    // تحميل صورة الخلفية من المسار ../src/lvlup_template.jpg
-    const backgroundImage = await loadImage('../src/lvlup_template.jpg')
+    // تحميل صورة الخلفية
+    const backgroundImage = await loadImage('path/to/your/background/image.jpg') // ضع المسار الصحيح للصورة
     ctx.drawImage(backgroundImage, 0, 0, width, height) // رسم الصورة كخلفية
 
     // عنوان المستوى
