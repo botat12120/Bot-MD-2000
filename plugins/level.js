@@ -1,6 +1,5 @@
 import { canLevelUp, xpRange } from '../lib/levelling.js'
 import { createCanvas, loadImage } from 'canvas'
-import { levelup } from '../lib/canvas.js'
 import fs from 'fs'
 
 let handler = async (m, { conn }) => {
@@ -31,9 +30,10 @@ let handler = async (m, { conn }) => {
     if (before !== user.level) {
         let teks = `🎊 مبروك لدخولك المستوى الجديد ${name}! المستوى:`
         let { min, xp, max } = xpRange(user.level, global.multiplier)
+        let progressPercentage = ((user.exp - min) / xp) * 100 // نسبة التقدم
 
         // تحميل قالب الصورة
-        let imgPath = '../src/lvlup_template.jpg'
+        let imgPath = '/mnt/data/E9833673-03D6-4A48-9A76-C8E967D5E801.webp' // مسار الخلفية التي تم رفعها
         const template = await loadImage(imgPath)
         
         // إعداد canvas
@@ -44,14 +44,24 @@ let handler = async (m, { conn }) => {
         ctx.drawImage(template, 0, 0, canvas.width, canvas.height)
 
         // إعداد النصوص
-        ctx.font = 'bold 30px Arial'
+        ctx.font = 'bold 35px Arial'
         ctx.fillStyle = '#FFFFFF'
         ctx.textAlign = 'center'
         
-        // كتابة النصوص على الصورة (عدد نقاط XP والمستوى)
-        ctx.fillText(`المستوى: ${user.level}`, canvas.width / 2, 50) // مستوى المستخدم
-        ctx.fillText(`XP الحالية: ${user.exp}`, canvas.width / 2, 100) // نقاط XP الحالية
-        ctx.fillText(`XP المتبقية: ${max - user.exp}`, canvas.width / 2, 150) // نقاط XP المتبقية للوصول للمستوى التالي
+        // كتابة مستوى المستخدم
+        ctx.fillText(`Level: ${user.level}`, canvas.width / 2, 50)
+        
+        // كتابة نقاط XP الحالية والمتبقية
+        ctx.fillText(`XP: ${user.exp} / ${xp}`, canvas.width / 2, 100)
+        ctx.fillText(`Remaining XP: ${max - user.exp}`, canvas.width / 2, 150)
+
+        // رسم شريط التقدم
+        ctx.fillStyle = '#00FF00' // اللون الأخضر للتقدم
+        ctx.fillRect(100, 300, (canvas.width - 200) * (progressPercentage / 100), 50)
+
+        ctx.strokeStyle = '#FFFFFF'
+        ctx.lineWidth = 5
+        ctx.strokeRect(100, 300, canvas.width - 200, 50) // الحدود الخارجية لشريط التقدم
 
         // حفظ الصورة
         const buffer = canvas.toBuffer()
