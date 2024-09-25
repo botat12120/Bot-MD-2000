@@ -1,5 +1,5 @@
 import { canLevelUp, xpRange } from '../lib/levelling.js'
-import { createCanvas, loadImage } from 'canvas'
+import { levelup } from '../lib/canvas.js'
 
 let handler = async (m, { conn }) => {
     let name = conn.getName(m.sender)
@@ -21,7 +21,7 @@ let handler = async (m, { conn }) => {
 
     let before = user.level * 1
 
-    // زيادة المستوى بناءً على XP
+    // زيادة المستوى حتى الوصول إلى الحد الأعلى بناءً على XP
     while (canLevelUp(user.level, user.exp, global.multiplier)) user.level++
 
     if (before !== user.level) {
@@ -36,54 +36,21 @@ let handler = async (m, { conn }) => {
 `.trim()
 
         try {
-            // إنشاء الرسم البياني للمستوى الجديد باستخدام canvas
-            const img = await generateLevelUpImage(name, user.level, user.exp, global.multiplier)
+            // إنشاء صورة المستوى الجديد باستخدام canvas
+            const img = await levelup(teks, user.level)
+            // إرسال الصورة مع النص التوضيحي
             conn.sendFile(m.chat, img, 'levelup.jpg', str, m)
         } catch (e) {
+            // في حالة وجود خطأ أثناء توليد الصورة، إرسال النص فقط
             m.reply(str)
         }
     }
 }
 
-// دالة لإنشاء صورة المستوى باستخدام Canvas
-async function generateLevelUpImage(name, level, exp, multiplier) {
-    const { min, xp, max } = xpRange(level, multiplier)
-    const progress = (exp - min) / xp * 100 // النسبة المئوية لتقدم XP
-    
-    const width = 800
-    const height = 300
-    const canvas = createCanvas(width, height)
-    const ctx = canvas.getContext('2d')
-
-    // خلفية الصورة
-    ctx.fillStyle = '#2C2F33'
-    ctx.fillRect(0, 0, width, height)
-
-    // عنوان المستوي
-    ctx.font = 'bold 36px Arial'
-    ctx.fillStyle = '#ffffff'
-    ctx.fillText(`🎉 تهانينا ${name}!`, 50, 50)
-    ctx.fillText(`المستوى: ${level}`, 50, 100)
-
-    // شريط التقدم
-    ctx.fillStyle = '#ffffff'
-    ctx.fillRect(50, 150, 700, 30) // الإطار الخارجي
-
-    ctx.fillStyle = '#7289DA' // لون التقدم
-    ctx.fillRect(50, 150, (700 * progress) / 100, 30)
-
-    // النص الذي يظهر نسبة التقدم
-    ctx.font = 'bold 24px Arial'
-    ctx.fillStyle = '#ffffff'
-    ctx.fillText(`XP: ${exp - min}/${xp} (${Math.round(progress)}%)`, 50, 210)
-
-    return canvas.toBuffer()
-}
-
 handler.help = ['levelup']
 handler.tags = ['xp']
 
-// الأوامر التي تستدعي الكود
-handler.command = ['لفل', 'lvl', 'levelup', 'مستواي', 'مستوا'] 
+// الأوامر التي يمكن أن تستدعي هذا المعالج
+handler.command = ['لفل', 'lvl', 'levelup', 'مستواي', 'مستوا']
 
 export default handler
