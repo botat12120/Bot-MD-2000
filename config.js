@@ -14,8 +14,11 @@ global.authFile = `Session`;
 global.isBaileysFail = false
 
 global.owner = [
-  ['966553211410', 'عمو هيثم', true]
+  ['966553211410', 'عمو هيثم', true], 
+  ['966551609722', 'عمو فارس', true]
 ];
+
+
 
 global.ownername = 'عمو هيثم';
 global.ownernumber = '966553211410';
