@@ -4,7 +4,7 @@ let handler = async (m, { conn, text }) => {
     else who = m.chat
     if (!who) throw '✳️ من فضلك قم بعمل تاج للمستخدم'
     let txt = text.replace('@' + who.split`@`[0], '').trim()
-    if (!txt) throw '✳️ قم بإدخال الكمية المراد إضافتها من *دايموند*'
+    if (!txt) throw '✳️ قم بإدخال الكمية المراد إضافتها من *الدولارات*'
     if (isNaN(txt)) throw '🔢 فقط الأرقام مسموح بها'
     let dmt = parseInt(txt)
     let diamond = dmt
@@ -17,12 +17,12 @@ let handler = async (m, { conn, text }) => {
 ┌──────────────
 ▢ *الإجمالي:* ${dmt}
 └──────────────`)
-    conn.fakeReply(m.chat, `▢ هل تلقيت \n\n *+${dmt}* دايموند؟`, who, m.text)
+    conn.fakeReply(m.chat, `▢ هل تلقيت \n\n *+${dmt}* الدولارات؟`, who, m.text)
 }
 
 handler.help = ['addgold <@مستخدم>']
 handler.tags = ['اقتصاد']
-handler.command = ['دايموند+'] 
+handler.command = ['دولار+'] 
 handler.rowner = true
 
 export default handler
