@@ -1,5 +1,4 @@
-let war = global.maxwarn
-let handler = async (m, { conn, text, args, groupMetadata,const handler = async (m, {conn, text, command, usedPrefix}) => {
+const handler = async (m, {conn, text, command, usedPrefix}) => {
   if (m.mentionedJid.includes(conn.user.jid)) return;
   const pp = './src/warn.jpg';
   let who;
@@ -25,7 +24,7 @@ let handler = async (m, { conn, text, args, groupMetadata,const handler = async 
   await m.reply(
       `${
       user.warn == 1 ? `*@${who.split`@`[0]}*` : `*@${who.split`@`[0]}*`
-      }تلقي انذار في هذه المجموعه!\n السبب: ${sdms}\n*الانذارات ${
+      }تلقي تحذيرا في هذه المجموعه!\n السبب: ${sdms}\n*التحزيرات ${
         user.warn
       }/3*`,
       null,
@@ -41,7 +40,7 @@ let handler = async (m, { conn, text, args, groupMetadata,const handler = async 
     await m.reply(
         `لقد حذرتك عده مرات!!\n*@${
           who.split`@`[0]
-        }*لقد تجاوزت 3 انذارات*, الان سيتم رمي النعال براسك/اا 👽`,
+        }*لقد تجاوزت 3 انذارات*, الان سيتم القداء عليك/اا 👽`,
         null,
         {mentions: [who]},
     );
@@ -53,5 +52,3 @@ let handler = async (m, { conn, text, args, groupMetadata,const handler = async 
 handler.command = /^(advertir|advertencia|warn|انذار)$/i;
 handler.group = true;
 handler.admin = true;
-handler.botAdmin = true;
-export default handler;
