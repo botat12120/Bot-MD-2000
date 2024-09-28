@@ -1,11 +1,11 @@
 const handler = async (m, {conn, text, command, usedPrefix}) => {
   const datas = global
-  const idioma = datas.db.data.users[m.sender].language || global.defaultLenguaje
-  const _translate = JSON.parse(fs.readFileSync(`./src/languages/${idioma}.json`))
+  const idioma = datas.db.data.users[m.sender].language
+  const _translate = JSON.parse(fs.readFileSync(`./language/ar2.json`))
   const tradutor = _translate.plugins.gc_warn
 
   if (m.mentionedJid.includes(conn.user.jid)) return;
-  const pp = './src/assets/images/menu/main/warn.jpg';
+  const pp = './src/warn.jpg';
   let who;
   if (m.isGroup) {
     who = m.mentionedJid[0] ?
@@ -54,7 +54,7 @@ const handler = async (m, {conn, text, command, usedPrefix}) => {
   return !1;
 };
 
-handler.command = /^(advertir|advertencia|warn|warning)$/i;
+handler.command = /^(advertir|انذار|warn|تحذير)$/i;
 handler.group = true;
 handler.admin = true;
 handler.botAdmin = true;
