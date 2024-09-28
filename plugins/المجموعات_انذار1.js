@@ -1,31 +1,44 @@
-let handler = async (m, { conn, text, args, usedPrefix, command, participants }) => {
+let war = global.maxwarn
+let handler = async (m, { conn, text, args, groupMetadata, usedPrefix, command }) => {      
+        let who
+        if (m.isGroup) who = m.mentionedJid[0] ? m.mentionedJid[0] : m.quoted ? m.quoted.sender : false
+        else who = m.chat
+        if (!who) throw `✳️ قم بالأشارة الى شخص\n\n📌 مثال : ${usedPrefix + command} @مستخدم`
+        if (!(who in global.db.data.users)) throw `✳️ غير موجود في بياناتيe`
+        let name = conn.getName(m.sender)
+        let warn = global.db.data.users[who].warn
+        if (warn < war) {
+            global.db.data.users[who].warn += 1
+            m.reply(`
+⚠️ *انذار مستخدم* ⚠️
 
-    let who = m.mentionedJid[0];
+▢ *المشرف:* ${name}
+▢ *المستخدم:* @${who.split`@`[0]}
+▢ *انذارات:* ${warn + 1}/${war}
+▢ *السبب:* ${text}`, null, { mentions: [who] }) 
+            m.reply(`
+⚠️ *تحذير* ⚠️
+حصل على انذار من مشرف
 
-    if (!who) return conn.sendMessage(m.chat, { text: `قم بوسم/الرد على الشخص الذي تريد ${command} !`, mentions: participants.map(a => a.id) }, { quoted: m });
-
-    let user = db.data.users[who];
-    if (user.warn == undefined) user.warn = 0;
-    if (user.warn >= 4) {
-        conn.groupParticipantsUpdate(m.chat, [who], 'remove').then(_ => {
-            conn.reply(m.chat, '📣 *سوف يتم طردك من المجموعة لأن مجموع تحذيراتك وصل إلى 5 نقاط* ❗', m);
-            user.warn = 0;
-        });
-    } else {
-        if (command == 'warn') {
-            user.warn += 1;
-            conn.reply(m.chat, `*تمت إضافة تحذير إلى ${await conn.getName(who.split('@')[0] + '@s.whatsapp.net') || who.split('@')[0]}* •> ${user.warn}/5`, m, { mentions: participants.map(a => a.id) });
-        } else if (command == 'unwarn') {
-            user.warn -= 1;
-            conn.reply(m.chat, `*تمت إزالة تحذير من ${await conn.getName(who.split('@')[0] + '@s.whatsapp.net') || who.split('@')[0]}* •> ${user.warn}/5`, m, { mentions: participants.map(a => a.id) });
+▢ *تحذير:* ${warn + 1}/${war} 
+اذا كنت تعتقد *${war}* ان الانذار ظلم كلم المشرف`, who)
+        } else if (warn == war) {
+            global.db.data.users[who].warn = 0
+            m.reply(`⛔ المستخدم تجاوز عدد الانذاراتe *${war}* سيتم ازالته`)
+            await time(3000)
+            await conn.groupParticipantsUpdate(m.chat, [who], 'remove')
+            m.reply(`♻️ تم ازالتك من المجموعة *${groupMetadata.subject}* لانك تجاوزت عدد الانذارات`, who)
         }
-    }
-};
+}
+handler.help = ['warn @user']
+handler.tags = ['group']
+handler.command = ['انذار'] 
+handler.group = true
+handler.admin = true
+handler.botAdmin = true
 
-handler.help = ['warn @tag'];
-handler.tags = ['owner'];
-handler.command = /^(unwarn|warn)$/i;
-handler.admin = true;
-handler.group = true;
+export default handler
 
-export default handler;
+const time = async (ms) => {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
