@@ -1,54 +1,31 @@
-const handler = async (m, {conn, text, command, usedPrefix}) => {
-  if (m.mentionedJid.includes(conn.user.jid)) return;
-  const pp = './src/warn.jpg';
-  let who;
-  if (m.isGroup) {
-    who = m.mentionedJid[0] ?
-      m.mentionedJid[0] :
-      m.quoted ?
-      m.quoted.sender :
-      text;
-  } else who = m.chat;
-  const user = global.db.data.users[who];
-  const bot = global.db.data.settings[conn.user.jid] || {};
-  const dReason = 'بدون سبب';
-  const msgtext = text || dReason;
-  const sdms = msgtext.replace(/@\d+-?\d* /g, '');
-  const warntext = `*[❗] قم بالرد علي الرساله او منشن المستخدم مع ذكر السبب*\n\n*—◉ مثال:*\n*${
-    usedPrefix + command
-  } @${global.suittag}*`;
-  if (!who) {
-    throw m.reply(warntext, m.chat, {mentions: conn.parseMention(warntext)});
-  }
-  user.warn += 1;
-  await m.reply(
-      `${
-      user.warn == 1 ? `*@${who.split`@`[0]}*` : `*@${who.split`@`[0]}*`
-      }تلقي تحذيرا في هذه المجموعه!\n السبب: ${sdms}\n*التحزيرات ${
-        user.warn
-      }/3*`,
-      null,
-      {mentions: [who]},
-  );
-  if (user.warn >= 3) {
-    if (!bot.restrict) {
-      return m.reply(
-          '*[❗معاومه❗] مالك البوت لم يقم بتفعيلهج كلمه عشان يفهلها*',
-      );
+let handler = async (m, { conn, text, args, usedPrefix, command, participants }) => {
+
+    let who = m.mentionedJid[0];
+
+    if (!who) return conn.sendMessage(m.chat, { text: `قم بوسم/الرد على الشخص الذي تريد ${command} !`, mentions: participants.map(a => a.id) }, { quoted: m });
+
+    let user = db.data.users[who];
+    if (user.warn == undefined) user.warn = 0;
+    if (user.warn >= 4) {
+        conn.groupParticipantsUpdate(m.chat, [who], 'remove').then(_ => {
+            conn.reply(m.chat, '📣 *سوف يتم طردك من المجموعة لأن مجموع تحذيراتك وصل إلى 5 نقاط* ❗', m);
+            user.warn = 0;
+        });
+    } else {
+        if (command == 'warn') {
+            user.warn += 1;
+            conn.reply(m.chat, `*تمت إضافة تحذير إلى ${await conn.getName(who.split('@')[0] + '@s.whatsapp.net') || who.split('@')[0]}* •> ${user.warn}/5`, m, { mentions: participants.map(a => a.id) });
+        } else if (command == 'unwarn') {
+            user.warn -= 1;
+            conn.reply(m.chat, `*تمت إزالة تحذير من ${await conn.getName(who.split('@')[0] + '@s.whatsapp.net') || who.split('@')[0]}* •> ${user.warn}/5`, m, { mentions: participants.map(a => a.id) });
+        }
     }
-    user.warn = 0;
-    await m.reply(
-        `لقد حذرتك عده مرات!!\n*@${
-          who.split`@`[0]
-        }*لقد تجاوزت 3 انذارات*, الان سيتم القداء عليك/اا 👽`,
-        null,
-        {mentions: [who]},
-    );
-    await conn.groupParticipantsUpdate(m.chat, [who], 'ازاله');
-  }
-  return !1;
 };
 
-handler.command = /^(advertir|advertencia|warn|انذار)$/i;
-handler.group = true;
+handler.help = ['warn @tag'];
+handler.tags = ['owner'];
+handler.command = /^(unwarn|warn)$/i;
 handler.admin = true;
+handler.group = true;
+
+export default handler;
