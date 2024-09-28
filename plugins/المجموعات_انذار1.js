@@ -1,8 +1,8 @@
 const handler = async (m, {conn, text, command, usedPrefix}) => {
   const datas = global
   const idioma = datas.db.data.users[m.sender].language
-  const _translate = JSON.parse(fs.readFileSync(`./language/ar2.json`))
-  const tradutor = _translate.plugins.gc_warn
+  const _translate = JSON.parse(fs.readFileSync(`./language/es.json`))
+  const tradutor = _translate.plugins.المجموعات_انذار1
 
   if (m.mentionedJid.includes(conn.user.jid)) return;
   const pp = './src/warn.jpg';
