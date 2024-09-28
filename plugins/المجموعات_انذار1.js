@@ -1,9 +1,5 @@
-const handler = async (m, {conn, text, command, usedPrefix}) => {
-  const datas = global
-  const idioma = datas.db.data.users[m.sender].language
-  const _translate = JSON.parse(fs.readFileSync(`./language/es.json`))
-  const tradutor = _translate.plugins.المجموعات_انذار1
-
+let war = global.maxwarn
+let handler = async (m, { conn, text, args, groupMetadata,const handler = async (m, {conn, text, command, usedPrefix}) => {
   if (m.mentionedJid.includes(conn.user.jid)) return;
   const pp = './src/warn.jpg';
   let who;
@@ -16,10 +12,10 @@ const handler = async (m, {conn, text, command, usedPrefix}) => {
   } else who = m.chat;
   const user = global.db.data.users[who];
   const bot = global.db.data.settings[conn.user.jid] || {};
-  const dReason = 'Sin motivo';
+  const dReason = 'بدون سبب';
   const msgtext = text || dReason;
   const sdms = msgtext.replace(/@\d+-?\d* /g, '');
-  const warntext = `${tradutor.texto1}\n*${
+  const warntext = `*[❗] قم بالرد علي الرساله او منشن المستخدم مع ذكر السبب*\n\n*—◉ مثال:*\n*${
     usedPrefix + command
   } @${global.suittag}*`;
   if (!who) {
@@ -29,7 +25,7 @@ const handler = async (m, {conn, text, command, usedPrefix}) => {
   await m.reply(
       `${
       user.warn == 1 ? `*@${who.split`@`[0]}*` : `*@${who.split`@`[0]}*`
-      } ${tradutor.texto2[0]} ${sdms}\n${tradutor.texto2[1]} ${
+      }تلقي انذار في هذه المجموعه!\n السبب: ${sdms}\n*الانذارات ${
         user.warn
       }/3*`,
       null,
@@ -38,23 +34,23 @@ const handler = async (m, {conn, text, command, usedPrefix}) => {
   if (user.warn >= 3) {
     if (!bot.restrict) {
       return m.reply(
-          `${tradutor.texto3[0]} (#𝚎𝚗𝚊𝚋𝚕𝚎 𝚛𝚎𝚜𝚝𝚛𝚒𝚌𝚝) ${tradutor.texto3[1]}`,
+          '*[❗معاومه❗] مالك البوت لم يقم بتفعيلهج كلمه عشان يفهلها*',
       );
     }
     user.warn = 0;
     await m.reply(
-        `${tradutor.texto4[0]}\n*@${
+        `لقد حذرتك عده مرات!!\n*@${
           who.split`@`[0]
-        }* ${tradutor.texto4[1]}`,
+        }*لقد تجاوزت 3 انذارات*, الان سيتم رمي النعال براسك/اا 👽`,
         null,
         {mentions: [who]},
     );
-    await conn.groupParticipantsUpdate(m.chat, [who], 'remove');
+    await conn.groupParticipantsUpdate(m.chat, [who], 'ازاله');
   }
   return !1;
 };
 
-handler.command = /^(advertir|انذار|warn|تحذير)$/i;
+handler.command = /^(advertir|advertencia|warn|انذار)$/i;
 handler.group = true;
 handler.admin = true;
 handler.botAdmin = true;
