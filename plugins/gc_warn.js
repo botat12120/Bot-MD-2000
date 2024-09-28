@@ -1,5 +1,9 @@
-let war = global.maxwarn
-let handler = async (m, { conn, text, args, groupMetadata,const handler = async (m, {conn, text, command, usedPrefix}) => {
+const handler = async (m, {conn, text, command, usedPrefix}) => {
+  const datas = global
+  const idioma = datas.db.data.users[m.sender].language
+  const _translate = JSON.parse(fs.readFileSync(`../language/es.json`))
+  const tradutor = _translate.plugins.gc_warn
+
   if (m.mentionedJid.includes(conn.user.jid)) return;
   const pp = './src/warn.jpg';
   let who;
@@ -12,10 +16,10 @@ let handler = async (m, { conn, text, args, groupMetadata,const handler = async 
   } else who = m.chat;
   const user = global.db.data.users[who];
   const bot = global.db.data.settings[conn.user.jid] || {};
-  const dReason = 'بدون سبب';
+  const dReason = 'Sin motivo';
   const msgtext = text || dReason;
   const sdms = msgtext.replace(/@\d+-?\d* /g, '');
-  const warntext = `*[❗] قم بالرد علي الرساله او منشن المستخدم مع ذكر السبب*\n\n*—◉ مثال:*\n*${
+  const warntext = `${tradutor.texto1}\n*${
     usedPrefix + command
   } @${global.suittag}*`;
   if (!who) {
@@ -25,7 +29,7 @@ let handler = async (m, { conn, text, args, groupMetadata,const handler = async 
   await m.reply(
       `${
       user.warn == 1 ? `*@${who.split`@`[0]}*` : `*@${who.split`@`[0]}*`
-      }تلقي انذار في هذه المجموعه!\n السبب: ${sdms}\n*الانذارات ${
+      } ${tradutor.texto2[0]} ${sdms}\n${tradutor.texto2[1]} ${
         user.warn
       }/3*`,
       null,
@@ -34,23 +38,23 @@ let handler = async (m, { conn, text, args, groupMetadata,const handler = async 
   if (user.warn >= 3) {
     if (!bot.restrict) {
       return m.reply(
-          '*[❗معاومه❗] مالك البوت لم يقم بتفعيلهج كلمه عشان يفهلها*',
+          `${tradutor.texto3[0]} (#𝚎𝚗𝚊𝚋𝚕𝚎 𝚛𝚎𝚜𝚝𝚛𝚒𝚌𝚝) ${tradutor.texto3[1]}`,
       );
     }
     user.warn = 0;
     await m.reply(
-        `لقد حذرتك عده مرات!!\n*@${
+        `${tradutor.texto4[0]}\n*@${
           who.split`@`[0]
-        }*لقد تجاوزت 3 انذارات*, الان سيتم رمي النعال براسك/اا 👽`,
+        }* ${tradutor.texto4[1]}`,
         null,
         {mentions: [who]},
     );
-    await conn.groupParticipantsUpdate(m.chat, [who], 'ازاله');
+    await conn.groupParticipantsUpdate(m.chat, [who], 'remove');
   }
   return !1;
 };
 
-handler.command = /^(advertir|advertencia|warn|انذار)$/i;
+handler.command = /^(advertir|انذار|warn|تحذير)$/i;
 handler.group = true;
 handler.admin = true;
 handler.botAdmin = true;
