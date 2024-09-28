@@ -1,7 +1,7 @@
 const handler = async (m, {conn, text, command, usedPrefix}) => {
   const datas = global
-  const idioma = datas.db.data.users[m.sender].language
-  const _translate = JSON.parse(fs.readFileSync(`../language/es.json`))
+  const idioma = datas.db.data.users[m.sender].language || global.defaultLenguaje
+  const _translate = JSON.parse(fs.readFileSync(`./language/${idioma}.json`))
   const tradutor = _translate.plugins.gc_warn
 
   if (m.mentionedJid.includes(conn.user.jid)) return;
@@ -54,7 +54,7 @@ const handler = async (m, {conn, text, command, usedPrefix}) => {
   return !1;
 };
 
-handler.command = /^(advertir|انذار|warn|تحذير)$/i;
+handler.command = /^(advertir|advertencia|warn|warning)$/i;
 handler.group = true;
 handler.admin = true;
 handler.botAdmin = true;
