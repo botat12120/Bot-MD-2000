@@ -10,7 +10,7 @@ let handler = async (m, { conn, groupMetadata }) => {
     
     if (users[jid].warn > 0) { // التحقق إذا كان لدى المستخدم إنذارات
       let mention = '@' + jid.split('@')[0] // إنشاء منشن باستخدام JID
-      warningList.push(`▢ *المنشن:* ${mention} \n▢ *الإنذارات:* ${users[jid].warn}\n`)
+      warningList.push(`< *المنشن:* ${mention} \n▢ *الإنذارات:* ${users[jid].warn}\n`)
     }
   }
   
