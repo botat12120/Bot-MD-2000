@@ -3,16 +3,23 @@ let handler = async (m, { conn, groupMetadata }) => {
   let warningList = []
   
   for (let jid in users) {
-    if (users[jid].warn > 0) { // التحقق إذا كان المستخدم لديه إنذارات
-      let name = conn.getName(jid) || 'Unknown' // جلب الاسم أو استخدام 'Unknown' في حالة عدم وجوده
-      warningList.push(`▢ *الاسم:* ${name} \n▢ *الإنذارات:* ${users[jid].warn}\n`)
+    if (!(jid in users)) { // التحقق إذا كان المستخدم موجود في قاعدة البيانات
+      m.reply(`✳️ المستخدم مع معرف ${jid} غير موجود في قاعدة البيانات.`)
+      return // الخروج من الدالة إذا كان المستخدم غير موجود
+    }
+    
+    if (users[jid].warn > 0) { // التحقق إذا كان لدى المستخدم إنذارات
+      let mention = '@' + jid.split('@')[0] // إنشاء منشن باستخدام JID
+      warningList.push(`▢ *المنشن:* ${mention} \n▢ *الإنذارات:* ${users[jid].warn}\n`)
     }
   }
   
   if (warningList.length === 0) {
     m.reply('✳️ لا يوجد أي إنذارات مسجلة.')
   } else {
-    m.reply(`*قائمة الإنذارات:*\n\n${warningList.join('\n')}`)
+    m.reply(`*قائمة الإنذارات:*\n\n${warningList.join('\n')}`, null, {
+      mentions: Object.keys(users).filter(jid => users[jid].warn > 0) // إضافة المنشنات إلى الرسالة
+    })
   }
 }
 
