@@ -1,3 +1,4 @@
+
 let handler = async (m, { conn, groupMetadata }) => {
   let users = global.db.data.users // جلب جميع المستخدمين من قاعدة البيانات
   let warningList = []
@@ -10,7 +11,8 @@ let handler = async (m, { conn, groupMetadata }) => {
     
     if (users[jid].warn > 0) { // التحقق إذا كان لدى المستخدم إنذارات
       let mention = '@' + jid.split('@')[0] // إنشاء منشن باستخدام JID
-      warningList.push(`< *المنشن:* ${mention} \n▢ *الإنذارات:* ${users[jid].warn}\n`)
+      let reason = users[jid].warnReason || 'لا يوجد سبب' // جلب السبب إذا كان موجودًا، أو إظهار "لا يوجد سبب"
+      warningList.push(`▢ *المنشن:* ${mention} \n▢ *الإنذارات:* ${users[jid].warn}\n▢ *السبب:* ${reason}\n`)
     }
   }
   
