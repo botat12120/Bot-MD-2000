@@ -19,5 +19,5 @@ else throw '*آسف ، شيء ما خاطئ ..تحقق من أنك استجاب�
 }}
 handler.help = ['wm <packname>|<author>']
 handler.tags = ['sticker']
-handler.command = /^سرقه|سرقة$/i
+handler.command = /^حقوق/i
 export default handler
