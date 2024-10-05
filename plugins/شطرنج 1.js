@@ -1,4 +1,4 @@
-import Chess from 'chess.js' // استيراد مكتبة الشطرنج
+import Chess from '../chess.js' // استيراد مكتبة الشطرنج
 
 let handler = async (m, { conn, usedPrefix, command, text }) => {
     conn.game = conn.game ? conn.game : {}
