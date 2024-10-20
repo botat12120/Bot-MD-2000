@@ -1,110 +1,62 @@
-import pkg from '@whiskeysockets/baileys';
-const { generateWAMessageFromContent, proto, prepareWAMessageMedia } = pkg;
-
 function clockString(ms) {
     let h = Math.floor(ms / 3600000);
-    let m = Math.floor((ms % 3600000) / 60000);
-    let s = Math.floor((ms % 60000) / 1000);
+    let m = Math.floor(ms % 3600000 / 60000);
+    let s = Math.floor(ms % 60000 / 1000);
     return [h, m, s].map(v => v.toString().padStart(2, '0')).join(':');
 }
 
-const handler = async (m, { conn, usedPrefix, __dirname, text, isPrems }) => {
-    let d = new Date();
-    d.setTime(d.getTime() + 3600000); // تعديل وقت الساعة بإضافة ساعة
+import pkg from '@whiskeysockets/baileys';
+const { generateWAMessageFromContent, proto, prepareWAMessageMedia } = pkg;
+
+const handler = async (m, {conn, usedPrefix, usedPrefix: _p, __dirname, text, isPrems}) => {
+    let d = new Date(new Date + 3600000);
     let locale = 'ar';
     let week = d.toLocaleDateString(locale, { weekday: 'long' });
     let date = d.toLocaleDateString(locale, { day: 'numeric', month: 'long', year: 'numeric' });
     let _uptime = process.uptime() * 1000;
     let uptime = clockString(_uptime);
-    let user = global.db.data.users[m.sender] || {};
-    let name = conn.getName(m.sender) || 'مستخدم';
-    let { money = 0, joincount = 0, diamond = 0 } = user;
-    let { exp = 0, limit = 0, level = 0, role = 'مستخدم' } = user;
-    let rtotalreg = Object.values(global.db.data.users).filter(user => user.registered === true).length;
+    let user = global.db.data.users[m.sender];
+    let name = conn.getName(m.sender)
+    let { money, joincount } = global.db.data.users[m.sender];
+    let { exp, limit, level, role } = global.db.data.users[m.sender];
+    let rtotalreg = Object.values(global.db.data.users).filter(user => user.registered == true).length;
     let more = String.fromCharCode(8206);
     let readMore = more.repeat(850);
-    let who = m.mentionedJid && m.mentionedJid[0] ? m.mentionedJid[0] : m.fromMe ? conn.user.jid : m.sender;
+    let who = m.mentionedJid && m.mentionedJid[0] ? m.mentionedJid[0] : m.fromMe ? conn.user.jid : m.sender
     let taguser = '@' + m.sender.split("@s.whatsapp.net")[0];
+  await conn.sendMessage(m.chat, { react: { text: '🐺', key: m.key } })
+  const Elsony = 'https://telegra.ph/file/b1d7db23103bcc9dd896d.jpg'
+  const mentionId = m.key.participant || m.key.remoteJid;
+ 
+conn.relayMessage(m.chat, { viewOnceMessage: { message: { interactiveMessage: { header: { title: `gataVidMenu`}, body: { text: `*مــرحــبــا بــك* @${mentionId.split('@')[0]} 
 
-    await conn.sendMessage(m.chat, { react: { text: '📂', key: m.key } });
+◉━━━─ •༺ 🔰 ༻• ─━━━◉
+📮╎⌟ مـعلـومـات الــ🐺ـبـوت ⌜╎📮
+> •إســم الــبــوت: روب ستارك
+> •الــمــطــور :  فارس 🔰
+> •مــدة الــتــشــغــيل : ${uptime}
+*◉━━━─⪻🔰⪼─━━━◉*
+📮╎⌟ مــعلـ🔰ـومــاتــك ⌜╎📮
+> •مــســتــواك : ${level}
+> •بــريــمــيــوم : ${user.premiumTime > 0 ? 'مــمـ🔰ـيز' : (isPrems ? 'مــمـ🔰ـيز' : 'عــ🐺ــادي') || ''}
+> •.رتــبــتــك : ${role}
+*◉━━━─⪻🔰⪼─━━━◉*
+*~⌬ تــ✍︎ــوقــيــع ↡~*🐺
+*⌞🔰┊ 𝑹𝑶𝑩 𝑩𝑶𝑻 ┊🔰⌝*
+*◉━━━─ •༺ 🔰 ༻• ─━━━◉*
+> Copyright © 2024 𝐑𝐎𝐁 𝐊𝐒𝐀`,subtitle: "Elsony",},header: { hasMediaAttachment: true,...(await prepareWAMessageMedia({ image : { url: Elsony } }, { upload: conn.waUploadToServer }, {quoted: m}))},
+                    contextInfo: {
+                        mentionedJid: [m.sender],
+                        isForwarded: false,
+                    },nativeFlowMessage: { buttons: [
 
-    // إرسال المقطع الصوتي أولاً
-    await conn.sendMessage(m.chat, { 
-        audio: { 
-            url: 'https://files.catbox.moe/rwgiqt.aac' 
-        }, 
-        mimetype: 'audio/mpeg', 
-        ptt: true 
-    }, { quoted: m });
 
-    // تجهيز الصورة والقائمة
-    const images = [
-        'https://telegra.ph/file/bd87aef51ebbbba4901c8.jpg',
-        'https://telegra.ph/file/b9c7242b2ea534c9fea51.jpg',
-        'https://telegra.ph/file/0e611ef0f5898f84e06ff.jpg',
-        'https://telegra.ph/file/e40751a79e8f69137c772.jpg',
-        'https://telegra.ph/file/81ef617af171d1263bca4.jpg', 
-        'https://telegra.ph/file/9ece2dc7647c5bc552f7a.jpg', 
-        'https://telegra.ph/file/5a22e9d6a3db8a26c2a8d.jpg', 
-        'https://telegra.ph/file/5122cb52f3d3e6a15d27d.jpg', 
-        'https://telegra.ph/file/7d69133c3dae7d2cb988e.jpg', 
-        'https://telegra.ph/file/7af98c215f23a0c7bfc6a.jpg', 
-        'https://telegra.ph/file/e704ae1c0637553a0bff0.jpg', 
-        'https://telegra.ph/file/f4fe5a6340ca9f5890cb4.jpg'
-    ];
-
-    const randomImage = images[Math.floor(Math.random() * images.length)];
-
-    var messa = await prepareWAMessageMedia({ image: { url: randomImage } }, { upload: conn.waUploadToServer });
-
-    // إرسال القائمة
-    conn.relayMessage(m.chat, {
-        viewOnceMessage: {
-            message: {
-                interactiveMessage: {
-                    body: {
-                        text: `> ╮━━━━━━━━━━━━━━╭
-        ┃    【 𝑾𝑬𝑳𝑪𝑶𝑴𝑬 】    ┃
-> ╯━━━━━━━━━━━━━━╰
-> *┤ *مرحبا يا ${name}*
-> *┤ 🤴🏻 المطور: Mahmoud Mahmed*
-> *┤ #️⃣ رقم المطور: 01225655220*
-> *┤ ✅ الاصدار: 1.2.0*
-> *┤ 🎳 البادئة: •*
-> *┤ 🧜🏽‍♂️ المستخدمين: ${rtotalreg}*  
-> *┤────────────···* 
-> *✧────[الـﻤـسـتـخـدم]────╮*
-> *┤ 🎩 *الاسـم: ${name}*
-> *┤ 🔃 المستوي: ${level}*
-> *┤ 🏆 *الـرتبة: ${role}*
-> *┤ 🎮 *الخبـرة: ${exp}* 
-> *┤ 💎 *الألـماس: ${diamond}* 
-> *┤ 🪙 *تربو كوينز: ${money}*
-> *┤ 🎟️ *الرموز: ${joincount}*
-> *┤ 🌟 *الـبـرﯾـمـيـوم: ${user.premiumTime > 0 ? 'مـمـيز✅' : (isPrems ? 'مـمـيز ✅' : 'عـادي ❌') || ''}* 
-> *┤────────────···* 
-> *✧────[ الـوقـت ]────╮*
-> *┤ 📆 التاريخ: ${date}*
-> *┤ 📅 اليوم: ${week}*
-> *┤ 🚀 وقت النشاط: ${uptime}*
-> *┤────────────···*`
-                    },
-                    footer: {
-                        text: '✪┋𝐁𝐘┋❥ 𝐓𝐀𝐑𝐁𝐎𝐎☞𝐁𝐎𝐓 ┋✪'
-                    },
-                    header: {
-                        title: '',
-                        hasMediaAttachment: true,
-                        imageMessage: messa.imageMessage,
-                    },
-                    nativeFlowMessage: {
-                        buttons: [
                             {
                                 name: 'single_select',
-buttonParamsJson: JSON.stringify({
-    title: '『』اوامر البوت《',
-    sections: [
-        {
+                                buttonParamsJson: JSON.stringify({
+                                    title: '⌈🔰╎الــقــوائـــم╎🔰⌋',
+                                    sections: [
+                                        {
             title: '『』قسم المالك《',
             highlight_label: '𝐓𝐀𝐑𝐁𝐎𝐎☞𝐁𝐎𝐓',
             rows: [
@@ -252,10 +204,3 @@ messageParamsJson: "TARBOO bot"
         }
     }, {});
 }
-
-handler.help = ['info'];
-handler.tags = ['main'];
-handler.command = ['اوامر', 'الاوامر', 'menu', 'المهام'];
-
-export default handler;
-``
