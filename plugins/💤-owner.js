@@ -14,7 +14,7 @@ let wib = moment.tz('Asia/Riyadh').format('HH:mm:ss')
 // -----++------++-------+++-------+--
 
 
-let venomImg = 'https://telegra.ph/file/9515141c1cfb203a3756f.jpg';
+let venomImg = 'https://telegra.ph/file/34cc3511963d010b239f5.png';
     let img = await prepareWAMessageMedia({ image: { url: venomImg } }, { thumbnail: venomImg, upload: conn.waUploadToServer });
 
 let handler = async (m, { conn, usedPrefix, command}) => {
@@ -45,27 +45,30 @@ let readMore = more.repeat(850)
 const taguser = '@' + m.sender.split('@s.whatsapp.net')[0];
 global.fcontact = { key: { fromMe: false, participant: `0@s.whatsapp.net`, remoteJid: 'status@broadcast' }, message: { contactMessage: { displayName: `${name}`, vcard: `BEGIN:VCARD\nVERSION:3.0\nN:;a,;;;\nFN:${name}\nitem1.TEL;waid=${m.sender.split('@')[0]}:${m.sender.split('@')[0]}\nitem1.X-ABLabel:Ponsel\nEND:VCARD`}}}
 
-let venomText = ``
+let venomText = `
+*ولكم يا المشرف ${taguser} في بوت ايميليا الخاص بالإداريين فقط، للتعرف على المزيد اضغط على قائمة الازرار اسفله :*
+`
 
     const device = getDevice();
 
     const interactiveMessage = {
     body: { text: venomText },
-    footer: { text: `> *Dev : Saad - 英雄*`.trim() },  
+    footer: { text: `> *Powered by Saad - 英雄*`.trim() },  
     header: {
-        title: ``,
+        title: `> *مَا يَلْفِظُ مِنْ قَوْلٍ إِلا لَدَيْهِ رَقِيبٌ عَتِيدٌ*`,
         hasMediaAttachment: true,
         imageMessage: img.imageMessage
     },
     nativeFlowMessage: {
         buttons: [
-           {
+            {
+            {
                name: "cta_url",
-               buttonParamsJson: '{"display_text":"ɴᴜᴍʙᴇʀ ϟ","url":"https://wa.me/966577896920","merchant_url":"https://www.google.com"}'
-            }, 
-              {
+               buttonParamsJson: '{"display_text":"ʙᴏᴛ ᴜᴩᴅᴀᴛᴇ ϟ","url":"https://whatsapp.com/channel/0029VaUpcIqJuyA4hiyNYR1K","merchant_url":"https://www.google.com"}'
+            },
+            {
                name: "cta_url",
-               buttonParamsJson: '{"display_text":"ɪɴꜱᴛᴀ ϟ","url":"https://instagram.com/nm9h?igshid=MzMyNGUyNmU2YQ==","merchant_url":"https://www.google.com"}'
+               buttonParamsJson: '{"display_text":"ʙᴏᴛ ᴜᴩᴅᴀᴛᴇ ϟ","url":"https://whatsapp.com/channel/0029VaUpcIqJuyA4hiyNYR1K","merchant_url":"https://www.google.com"}'
             }, 
               {
                name: "cta_url",
@@ -90,7 +93,9 @@ conn.relayMessage(m.chat, msg.message, { messageId: msg.key.id});
 
 handler.help = ['ytsearch <texto>'];
 handler.tags = ['search'];
-handler.command = /^(المطور|الصانع|سعد|المؤسس|مطور)$/i;
+handler.command = /^(المطور)$/i;
+handler.group = true;
+handler.admin = true;
 export default handler;
 
 function clockString(ms) {
