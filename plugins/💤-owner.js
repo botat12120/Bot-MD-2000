@@ -62,7 +62,6 @@ let venomText = `
     nativeFlowMessage: {
         buttons: [
             {
-            {
                name: "cta_url",
                buttonParamsJson: '{"display_text":"ʙᴏᴛ ᴜᴩᴅᴀᴛᴇ ϟ","url":"https://whatsapp.com/channel/0029VaUpcIqJuyA4hiyNYR1K","merchant_url":"https://www.google.com"}'
             },
